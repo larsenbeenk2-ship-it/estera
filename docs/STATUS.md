@@ -37,6 +37,10 @@ The public repository is
 [larsenbeenk2-ship-it/estera](https://github.com/larsenbeenk2-ship-it/estera).
 The public website is a demo/download site; device control runs locally.
 
+The production website is [estera-virid.vercel.app](https://estera-virid.vercel.app).
+It was deployed directly with Vercel CLI. Automatic deployments from GitHub are
+not connected; subsequent website updates require a production CLI deployment.
+
 See [DESKTOP.md](DESKTOP.md) for the user guide,
 [DISTRIBUTION.md](DISTRIBUTION.md) for release packaging,
 [COMPATIBILITY.md](COMPATIBILITY.md) for hardware acceptance, and

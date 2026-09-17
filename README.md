@@ -9,6 +9,7 @@ map interface. It targets **Apple Silicon Macs on macOS 15 or later** and uses
 · [Release notes](https://github.com/larsenbeenk2-ship-it/estera/releases/tag/v0.1.0)
 · [Install and use](docs/DESKTOP.md)
 · [GitHub](https://github.com/larsenbeenk2-ship-it/estera)
+· [Website](https://estera-virid.vercel.app)
 
 Unzip the download, move **Estera.app** to Applications, and open it. The preview
 is ad-hoc signed and **not notarized**; macOS may require approval in System
