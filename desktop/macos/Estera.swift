@@ -160,6 +160,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         panel.beginSheetModal(for: window) { result in completionHandler(result == .OK ? panel.urls : nil) }
     }
 
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        guard let url = frame.request.url, isLocal(url) else { completionHandler(false); return }
+        let alert = NSAlert()
+        alert.messageText = "Confirm in Estera"
+        alert.informativeText = message
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Continue")
+        alert.addButton(withTitle: "Cancel")
+        alert.beginSheetModal(for: window) { result in completionHandler(result == .alertFirstButtonReturn) }
+    }
+
     func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
         pendingDownloads.insert(download)
         download.delegate = self

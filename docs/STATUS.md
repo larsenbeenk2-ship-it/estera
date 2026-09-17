@@ -1,4 +1,4 @@
-# Estera 0.1.0 preview status
+# Estera 0.1.1 preview status
 
 September 17, 2026.
 
@@ -14,7 +14,7 @@ are **USB only**. There is no paid Pro tier or GitHub-star requirement.
 | USB policy | Wireless discovery/connection/setup rejected; old Auto preferences use USB without fallback |
 | Device authorization | Loopback host/origin/token checks and explicit selected-phone consent retained |
 | Frontend | Worldwide map, search, Pin/Walk/Bike/Drive, route preview, GPX, saved journeys and session controls |
-| Download target | `Estera-0.1.0-macos-arm64.zip` on GitHub tag `v0.1.0` |
+| Download target | `Estera-0.1.1-macos-arm64.zip` on GitHub tag `v0.1.1` |
 | Signing | Ad-hoc preview; no Developer ID signing or notarization |
 | Windows | USB source preview; no installer or native Windows/iPhone evidence |
 | Real hardware | Location set/reset and physical-location recovery remain unverified |

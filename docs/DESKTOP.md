@@ -1,4 +1,4 @@
-# Estera for Mac — 0.1.0 preview
+# Estera for Mac — 0.1.1 preview
 
 Estera is a free, GPL-3.0-or-later desktop iPhone location simulator. The Mac
 download includes its native window, Python runtime, backend and web interface.
@@ -6,7 +6,7 @@ Node.js, Python, Homebrew and a terminal are not needed to use this download.
 
 ## Install and open
 
-1. Download `Estera-0.1.0-macos-arm64.zip` from the GitHub release.
+1. Download `Estera-0.1.1-macos-arm64.zip` from the GitHub release.
 2. Unzip it and drag **Estera.app** to **Applications**.
 3. Open Estera. If macOS blocks this preview because it is not notarized, review
    the release and use **System Settings → Privacy & Security → Open Anyway**.

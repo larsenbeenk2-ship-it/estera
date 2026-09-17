@@ -14,7 +14,7 @@ The development server uses `http://127.0.0.1:3001` with a strict port. `npm run
 
 ## Public release links
 
-The header opens [Estera on GitHub](https://github.com/larsenbeenk2-ship-it/estera). Download buttons show system requirements, installation steps, and a direct link to `Estera-0.1.0-macos-arm64.zip` in release `v0.1.0`.
+The header opens [Estera on GitHub](https://github.com/larsenbeenk2-ship-it/estera). Download buttons show system requirements, installation steps, and a direct link to `Estera-0.1.1-macos-arm64.zip` in release `v0.1.1`.
 
 - The first binary is a macOS 15+ Apple Silicon prerelease, without Developer ID signing or Apple notarization. It includes the app runtime; users unzip it, move Estera into Applications, and launch it. Windows is a source-only preview.
 - Pin and Journey are capabilities in the same free app. There is no advertised paid Pro tier.

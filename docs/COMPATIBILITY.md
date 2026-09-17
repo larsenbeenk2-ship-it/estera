@@ -1,6 +1,6 @@
 # Compatibility and hardware evidence
 
-Estera 0.1.0 is a Mac desktop preview with a separate Windows source preview.
+Estera 0.1.1 is a Mac desktop preview with a separate Windows source preview.
 Version targets describe the implementation; they do not establish compatibility
 with every device or operating-system build.
 
