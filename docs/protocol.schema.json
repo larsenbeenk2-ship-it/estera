@@ -1,0 +1,2426 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenLocation IPC v1 request",
+  "$defs": {
+    "RemoteConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "address": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Address",
+          "type": "string"
+        },
+        "port": {
+          "maximum": 65535,
+          "minimum": 1,
+          "title": "Port",
+          "type": "integer"
+        },
+        "pairing_identifier": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Pairing Identifier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "address",
+        "port",
+        "pairing_identifier"
+      ],
+      "title": "RemoteConfig",
+      "type": "object"
+    },
+    "Coordinate": {
+      "additionalProperties": false,
+      "properties": {
+        "latitude": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Longitude",
+          "type": "number"
+        }
+      },
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "title": "Coordinate",
+      "type": "object"
+    },
+    "IndexRange": {
+      "additionalProperties": false,
+      "properties": {
+        "start_index": {
+          "exclusiveMaximum": 50000,
+          "minimum": 0,
+          "title": "Start Index",
+          "type": "integer"
+        },
+        "end_index": {
+          "exclusiveMaximum": 50000,
+          "minimum": 0,
+          "title": "End Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_index",
+        "end_index"
+      ],
+      "title": "IndexRange",
+      "type": "object"
+    },
+    "Intersection": {
+      "additionalProperties": false,
+      "properties": {
+        "point_index": {
+          "exclusiveMaximum": 49999,
+          "exclusiveMinimum": 0,
+          "title": "Point Index",
+          "type": "integer"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "control": {
+          "default": "unknown",
+          "enum": [
+            "stop_sign",
+            "traffic_signal",
+            "uncontrolled",
+            "unknown"
+          ],
+          "title": "Control",
+          "type": "string"
+        }
+      },
+      "required": [
+        "point_index"
+      ],
+      "title": "Intersection",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "latitude": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "time": {
+          "anyOf": [
+            {
+              "maximum": 253402300799,
+              "minimum": -62135596800,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time"
+        }
+      },
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "Route": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "default": "Untitled route",
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/Point"
+          },
+          "maxItems": 50000,
+          "minItems": 2,
+          "title": "Points",
+          "type": "array"
+        },
+        "waypoints": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Waypoint"
+          },
+          "maxItems": 1000,
+          "title": "Waypoints",
+          "type": "array"
+        },
+        "intersections": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Intersection"
+          },
+          "maxItems": 49998,
+          "title": "Intersections",
+          "type": "array"
+        },
+        "intersection_source": {
+          "default": "none",
+          "enum": [
+            "topology",
+            "maneuvers",
+            "none"
+          ],
+          "title": "Intersection Source",
+          "type": "string"
+        },
+        "traffic_controls_source": {
+          "default": "none",
+          "enum": [
+            "provider",
+            "partial",
+            "unavailable",
+            "none"
+          ],
+          "title": "Traffic Controls Source",
+          "type": "string"
+        },
+        "stop_policy": {
+          "default": "mapped",
+          "enum": [
+            "mapped",
+            "all"
+          ],
+          "title": "Stop Policy",
+          "type": "string"
+        },
+        "intersection_pause_seconds": {
+          "default": 0.0,
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Intersection Pause Seconds",
+          "type": "number"
+        },
+        "driving_speed_mode": {
+          "default": "adaptive",
+          "enum": [
+            "adaptive",
+            "manual"
+          ],
+          "title": "Driving Speed Mode",
+          "type": "string"
+        },
+        "speed_variation": {
+          "default": 0.0,
+          "maximum": 0.5,
+          "minimum": 0,
+          "title": "Speed Variation",
+          "type": "number"
+        },
+        "segment_speeds_mps": {
+          "default": [],
+          "items": {
+            "maximum": 100,
+            "minimum": 0.01,
+            "type": "number"
+          },
+          "maxItems": 49999,
+          "title": "Segment Speeds Mps",
+          "type": "array"
+        },
+        "segment_speed_limits_mps": {
+          "default": [],
+          "items": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0.01,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "maxItems": 49999,
+          "title": "Segment Speed Limits Mps",
+          "type": "array"
+        },
+        "segment_modes": {
+          "default": [],
+          "items": {
+            "enum": [
+              "walking",
+              "cycling",
+              "driving"
+            ],
+            "type": "string"
+          },
+          "maxItems": 49999,
+          "title": "Segment Modes",
+          "type": "array"
+        },
+        "segment_road_classes": {
+          "default": [],
+          "items": {
+            "enum": [
+              "motorway",
+              "trunk",
+              "primary",
+              "secondary",
+              "tertiary",
+              "unclassified",
+              "residential",
+              "service_other",
+              "ramp",
+              "unknown"
+            ],
+            "type": "string"
+          },
+          "maxItems": 49999,
+          "title": "Segment Road Classes",
+          "type": "array"
+        },
+        "segment_grades": {
+          "default": [],
+          "items": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "maxItems": 49999,
+          "title": "Segment Grades",
+          "type": "array"
+        },
+        "terrain_source": {
+          "default": "none",
+          "enum": [
+            "none",
+            "provider",
+            "partial",
+            "unavailable"
+          ],
+          "title": "Terrain Source",
+          "type": "string"
+        },
+        "speed_source": {
+          "default": "none",
+          "enum": [
+            "none",
+            "provider",
+            "mixed",
+            "fallback"
+          ],
+          "title": "Speed Source",
+          "type": "string"
+        },
+        "realistic_motion": {
+          "default": false,
+          "title": "Realistic Motion",
+          "type": "boolean"
+        },
+        "mode": {
+          "default": "walking",
+          "enum": [
+            "walking",
+            "cycling",
+            "driving"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "mapkit",
+            "road",
+            "gpx",
+            "drawn",
+            "reversed_track"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "speed_mps": {
+          "default": 1.4,
+          "maximum": 100,
+          "minimum": 0.01,
+          "title": "Speed Mps",
+          "type": "number"
+        },
+        "timing": {
+          "default": "constant",
+          "enum": [
+            "constant",
+            "recorded"
+          ],
+          "title": "Timing",
+          "type": "string"
+        },
+        "repeat_count": {
+          "default": 1,
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Repeat Count",
+          "type": "integer"
+        },
+        "loop": {
+          "default": false,
+          "title": "Loop",
+          "type": "boolean"
+        },
+        "completion": {
+          "default": "hold",
+          "enum": [
+            "hold",
+            "clear"
+          ],
+          "title": "Completion",
+          "type": "string"
+        },
+        "walking_access_version": {
+          "default": 0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Walking Access Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "points",
+        "source"
+      ],
+      "title": "Route",
+      "type": "object"
+    },
+    "StopAccess": {
+      "additionalProperties": false,
+      "properties": {
+        "roadside_coordinate": {
+          "$ref": "#/$defs/Coordinate"
+        },
+        "arrival_index": {
+          "exclusiveMaximum": 50000,
+          "minimum": 0,
+          "title": "Arrival Index",
+          "type": "integer"
+        },
+        "departure_index": {
+          "exclusiveMaximum": 50000,
+          "minimum": 0,
+          "title": "Departure Index",
+          "type": "integer"
+        },
+        "walking_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IndexRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "walking_back": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IndexRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "estimated_segments": {
+          "default": [],
+          "items": {
+            "exclusiveMaximum": 49999,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 49999,
+          "title": "Estimated Segments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "roadside_coordinate",
+        "arrival_index",
+        "departure_index"
+      ],
+      "title": "StopAccess",
+      "type": "object"
+    },
+    "Waypoint": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "point_index": {
+          "exclusiveMaximum": 50000,
+          "minimum": 0,
+          "title": "Point Index",
+          "type": "integer"
+        },
+        "dwell_seconds": {
+          "default": 0.0,
+          "maximum": 86400,
+          "minimum": 0,
+          "title": "Dwell Seconds",
+          "type": "number"
+        },
+        "walk_to_stop": {
+          "default": true,
+          "title": "Walk To Stop",
+          "type": "boolean"
+        },
+        "requested_coordinate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Coordinate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "access": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StopAccess"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "name",
+        "point_index"
+      ],
+      "title": "Waypoint",
+      "type": "object"
+    }
+  },
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "hello"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "maximum": 1,
+              "minimum": 1,
+              "title": "Version",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "version"
+          ],
+          "title": "Hello",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "capabilities"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "host.check"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "status"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "devices.list"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "transport": {
+              "default": "usb",
+              "enum": [
+                "auto",
+                "usb",
+                "wifi"
+              ],
+              "title": "Transport",
+              "type": "string"
+            }
+          },
+          "title": "DeviceList",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "device.check"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "device_id": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Device Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "device_id"
+          ],
+          "title": "DeviceTarget",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "device.prepare"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "device_id": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Device Id",
+              "type": "string"
+            },
+            "pair": {
+              "default": false,
+              "title": "Pair",
+              "type": "boolean"
+            },
+            "reveal_developer_mode": {
+              "default": false,
+              "title": "Reveal Developer Mode",
+              "type": "boolean"
+            },
+            "enable_wifi": {
+              "default": false,
+              "title": "Enable Wifi",
+              "type": "boolean"
+            },
+            "mount_image": {
+              "default": false,
+              "title": "Mount Image",
+              "type": "boolean"
+            },
+            "allow_download": {
+              "default": false,
+              "title": "Allow Download",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "device_id"
+          ],
+          "title": "Prepare",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "connect"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "device_id": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Device Id",
+              "type": "string"
+            },
+            "transport": {
+              "default": "usb",
+              "enum": [
+                "auto",
+                "usb",
+                "wifi",
+                "remote"
+              ],
+              "title": "Transport",
+              "type": "string"
+            },
+            "remote": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/RemoteConfig"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "prepare": {
+              "default": false,
+              "title": "Prepare",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "device_id"
+          ],
+          "title": "Connect",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "disconnect"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "retry"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "location.set"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "coordinate": {
+              "$ref": "#/$defs/Coordinate"
+            }
+          },
+          "required": [
+            "coordinate"
+          ],
+          "title": "Fixed",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "route.start"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "route": {
+              "$ref": "#/$defs/Route"
+            }
+          },
+          "required": [
+            "route"
+          ],
+          "title": "RouteInput",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "route.preview"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "route": {
+              "$ref": "#/$defs/Route"
+            }
+          },
+          "required": [
+            "route"
+          ],
+          "title": "RouteInput",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "route.reverse"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "route": {
+              "$ref": "#/$defs/Route"
+            }
+          },
+          "required": [
+            "route"
+          ],
+          "title": "RouteInput",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "pause"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "resume"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "speed"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "speed_mps": {
+              "maximum": 100,
+              "minimum": 0.01,
+              "title": "Speed Mps",
+              "type": "number"
+            }
+          },
+          "required": [
+            "speed_mps"
+          ],
+          "title": "Speed",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "stop"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "timer"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "seconds": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "maximum": 86400,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Seconds"
+            }
+          },
+          "required": [
+            "seconds"
+          ],
+          "title": "Timer",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "cancel"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "request_id": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "title": "Request Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "request_id"
+          ],
+          "title": "Cancel",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "shutdown"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {},
+          "title": "Empty",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "gpx.inspect"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "xml": {
+              "maxLength": 5242880,
+              "title": "Xml",
+              "type": "string"
+            }
+          },
+          "required": [
+            "xml"
+          ],
+          "title": "GPXInput",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "gpx.import"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "xml": {
+              "maxLength": 5242880,
+              "title": "Xml",
+              "type": "string"
+            },
+            "segment_index": {
+              "minimum": 0,
+              "title": "Segment Index",
+              "type": "integer"
+            },
+            "timing": {
+              "default": "constant",
+              "enum": [
+                "constant",
+                "recorded"
+              ],
+              "title": "Timing",
+              "type": "string"
+            }
+          },
+          "required": [
+            "xml",
+            "segment_index"
+          ],
+          "title": "GPXImport",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "gpx.export"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "route": {
+              "$ref": "#/$defs/Route"
+            }
+          },
+          "required": [
+            "route"
+          ],
+          "title": "RouteInput",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "store.list"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "bucket": {
+              "enum": [
+                "locations",
+                "routes",
+                "location_history",
+                "route_history"
+              ],
+              "title": "Bucket",
+              "type": "string"
+            },
+            "item_id": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Item Id"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Name"
+            },
+            "payload": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Payload"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            },
+            "offset": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "limit": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "bucket"
+          ],
+          "title": "Content",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "store.get"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "bucket": {
+              "enum": [
+                "locations",
+                "routes",
+                "location_history",
+                "route_history"
+              ],
+              "title": "Bucket",
+              "type": "string"
+            },
+            "item_id": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Item Id"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Name"
+            },
+            "payload": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Payload"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            },
+            "offset": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "limit": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "bucket"
+          ],
+          "title": "Content",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "store.put"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "bucket": {
+              "enum": [
+                "locations",
+                "routes",
+                "location_history",
+                "route_history"
+              ],
+              "title": "Bucket",
+              "type": "string"
+            },
+            "item_id": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Item Id"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Name"
+            },
+            "payload": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Payload"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            },
+            "offset": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "limit": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "bucket"
+          ],
+          "title": "Content",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "store.delete"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "bucket": {
+              "enum": [
+                "locations",
+                "routes",
+                "location_history",
+                "route_history"
+              ],
+              "title": "Bucket",
+              "type": "string"
+            },
+            "item_id": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Item Id"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Name"
+            },
+            "payload": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Payload"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            },
+            "offset": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "limit": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "bucket"
+          ],
+          "title": "Content",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "op": {
+          "const": "store.clear"
+        },
+        "params": {
+          "additionalProperties": false,
+          "properties": {
+            "bucket": {
+              "enum": [
+                "locations",
+                "routes",
+                "location_history",
+                "route_history"
+              ],
+              "title": "Bucket",
+              "type": "string"
+            },
+            "item_id": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Item Id"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Name"
+            },
+            "payload": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Payload"
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Revision"
+            },
+            "offset": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "limit": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "bucket"
+          ],
+          "title": "Content",
+          "type": "object"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "id",
+        "op",
+        "params"
+      ],
+      "title": "Request",
+      "type": "object"
+    }
+  ]
+}

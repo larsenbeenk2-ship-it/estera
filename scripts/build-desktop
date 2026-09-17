@@ -1,0 +1,32 @@
+#!/bin/sh
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+[ "$(uname -s)" = Darwin ] && [ "$(uname -m)" = arm64 ] || { echo 'Build this release on an Apple Silicon Mac.' >&2; exit 1; }
+cd "$ROOT"
+PYTHON="$ROOT/backend/.venv/bin/python"
+[ -x "$PYTHON" ] || { echo 'Run npm run bootstrap first.' >&2; exit 1; }
+export MACOSX_DEPLOYMENT_TARGET=15.0
+export CLANG_MODULE_CACHE_PATH="$ROOT/build/clang-cache"
+export SWIFT_MODULECACHE_PATH="$ROOT/build/swift-cache"
+export PYINSTALLER_CONFIG_DIR="$ROOT/build/pyinstaller-cache"
+mkdir -p "$ROOT/build" "$ROOT/dist"
+npm --prefix web run build
+"$PYTHON" scripts/web_notices.py
+"$PYTHON" scripts/patch_tss.py
+"$PYTHON" scripts/prepare_native.py
+"$PYTHON" -m PyInstaller --noconfirm --distpath "$ROOT/dist" --workpath "$ROOT/build/pyinstaller-desktop" "$ROOT/packaging/desktop.spec"
+APP="$ROOT/dist/Estera.app"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+cp desktop/macos/Info.plist "$APP/Contents/Info.plist"
+/usr/bin/ditto "$ROOT/dist/EsteraBackend" "$APP/Contents/Resources/EsteraBackend"
+xcrun swiftc -O -target arm64-apple-macos15.0 -module-cache-path "$SWIFT_MODULECACHE_PATH" -framework AppKit -framework WebKit desktop/macos/Estera.swift -o "$APP/Contents/MacOS/Estera"
+mkdir -p "$ROOT/build/Estera.iconset"
+xcrun swiftc -O -module-cache-path "$SWIFT_MODULECACHE_PATH" -framework AppKit desktop/macos/Icon.swift -o "$ROOT/build/make-icon"
+"$ROOT/build/make-icon" "$ROOT/build/Estera.iconset"
+/usr/bin/iconutil -c icns "$ROOT/build/Estera.iconset" -o "$APP/Contents/Resources/Estera.icns"
+cp LICENSE THIRD_PARTY_NOTICES.md "$APP/Contents/Resources/"
+cp docs/DESKTOP.md "$APP/Contents/Resources/Read me.md"
+# PyInstaller signs nested Mach-O dependencies. Sign the completed native bundle
+# last. This is an ad-hoc development signature, NOT Developer ID/notarization.
+/usr/bin/codesign --force --sign - "$APP"
+"$PYTHON" scripts/package-desktop.py

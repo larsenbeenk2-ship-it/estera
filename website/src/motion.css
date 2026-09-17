@@ -1,0 +1,18 @@
+/* Native document progress owns these reversible spatial transitions. */
+[data-scroll-scene] { --scene-progress: 1; }
+.product-showcase {
+  transform-origin: 50% 80%;
+  transform: translateY(calc((1 - var(--scene-progress)) * 46px)) rotateX(calc((1 - var(--scene-progress)) * 14deg)) rotateY(calc((1 - var(--scene-progress)) * -4deg)) scale(calc(.965 + var(--scene-progress) * .035));
+}
+.edition-art-pro .art-route { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--scene-progress)); }
+@media (max-width: 700px) {
+  .product-showcase { transform: translateY(calc((1 - var(--scene-progress)) * 18px)) rotateX(calc((1 - var(--scene-progress)) * 5deg)); }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .product-showcase { transform: none; }
+  .edition-art-pro .art-route { stroke-dashoffset: 0; }
+}
+@media (forced-colors: active) {
+  .product-showcase { transform: none; }
+  .edition-art-pro .art-route { stroke-dashoffset: 0; }
+}

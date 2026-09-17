@@ -1,0 +1,36 @@
+[project]
+name = "openlocation-backend"
+version = "0.1.0"
+description = "Private macOS iPhone location simulation helper"
+requires-python = ">=3.13,<3.14"
+license = "GPL-3.0-or-later"
+dependencies = [
+  "pymobiledevice3==11.12.4",
+  "gpxpy==1.6.2",
+  "defusedxml==0.7.1",
+  "httpx==0.28.1",
+  "pydantic==2.11.7",
+  "fastapi==0.141.1",
+  "uvicorn==0.52.4",
+  "shapely==2.1.2",
+  "truststore==0.10.4",
+]
+
+[project.scripts]
+openlocation-backend = "openlocation_backend.__main__:main"
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+build = ["pyinstaller==6.22.3", "hatchling==1.27.0"]
+dev = ["pytest==8.4.2", "pytest-asyncio==1.2.0"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.uv]
+required-version = ">=0.8.0"

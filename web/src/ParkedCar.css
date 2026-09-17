@@ -1,0 +1,51 @@
+.parked-car-pin {
+  width: 0;
+  height: 0;
+  z-index: 4;
+  color: #f0c987;
+}
+
+/* The dot stays on the roadside coordinate; the badge leaves room for the walker. */
+.parked-car-pin::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 21px;
+  border-top: 1px solid currentColor;
+  transform: rotate(-53deg);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.parked-car-pin::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  pointer-events: none;
+}
+
+.parked-car-pin-core {
+  position: absolute;
+  left: 12px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: #14211f;
+  box-shadow: 0 3px 12px #0006;
+  cursor: default;
+}
+
+.parked-car-pin-label {
+  font: 700 10px ui-monospace, monospace;
+}

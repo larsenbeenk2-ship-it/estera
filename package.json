@@ -1,0 +1,15 @@
+{
+  "name": "estera",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "bootstrap": "node scripts/tasks.mjs bootstrap",
+    "dev": "node scripts/tasks.mjs dev",
+    "start": "node scripts/tasks.mjs start",
+    "build": "node scripts/tasks.mjs build",
+    "build:desktop": "sh scripts/build-desktop",
+    "stop": "node scripts/tasks.mjs stop",
+    "check": "node scripts/tasks.mjs check",
+    "check:web": "node scripts/tasks.mjs check-web"
+  }
+}

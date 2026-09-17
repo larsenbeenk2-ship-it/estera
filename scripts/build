@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+[ -x "$ROOT/backend/.venv/bin/python" ] || { echo 'Run scripts/bootstrap first.' >&2; exit 1; }
+export UV_PYTHON_INSTALL_DIR="$ROOT/.toolchains/python"
+uv sync --project "$ROOT/backend" --locked --all-groups
+"$ROOT/backend/.venv/bin/python" "$ROOT/scripts/patch_tss.py"
+"$ROOT/backend/.venv/bin/python" "$ROOT/scripts/prepare_native.py"
+export MACOSX_DEPLOYMENT_TARGET=15.0
+cd "$ROOT"
+"$ROOT/backend/.venv/bin/python" -m PyInstaller --noconfirm --distpath "$ROOT/dist" --workpath "$ROOT/build/pyinstaller" "$ROOT/packaging/backend.spec"
+"$ROOT/backend/.venv/bin/python" "$ROOT/scripts/finalize_macos.py"
+"$ROOT/backend/.venv/bin/python" "$ROOT/scripts/notices.py"

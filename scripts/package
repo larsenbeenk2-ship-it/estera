@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+[ -x "$ROOT/dist/OpenLocationBackend/openlocation-backend" ] || { echo 'Run scripts/build first.' >&2; exit 1; }
+"$ROOT/backend/.venv/bin/python" "$ROOT/scripts/package.py"
