@@ -1,10 +1,10 @@
 # Desktop preview distribution
 
-Estera 0.1.1 targets **Apple Silicon Macs running macOS 15 or later**. The native
+Estera 0.1.2 targets **Apple Silicon Macs running macOS 15 or later**. The native
 AppKit/WKWebView shell bundles its Python runtime, web interface and USB backend.
 The download is
-[Estera-0.1.1-macos-arm64.zip](https://github.com/larsenbeenk2-ship-it/estera/releases/download/v0.1.1/Estera-0.1.1-macos-arm64.zip)
-on the [v0.1.1 release](https://github.com/larsenbeenk2-ship-it/estera/releases/tag/v0.1.1).
+[Estera-0.1.2-macos-arm64.zip](https://github.com/larsenbeenk2-ship-it/estera/releases/download/v0.1.2/Estera-0.1.2-macos-arm64.zip)
+on the [v0.1.2 release](https://github.com/larsenbeenk2-ship-it/estera/releases/tag/v0.1.2).
 See [DESKTOP.md](DESKTOP.md) for installation and [STATUS.md](STATUS.md) for actual
 build/runtime evidence and remaining checks.
 

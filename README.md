@@ -1,12 +1,12 @@
 # Estera
 
-A free, open-source desktop iPhone location simulator. The **0.1.1 Mac preview**
+A free, open-source desktop iPhone location simulator. The **0.1.2 Mac preview**
 bundles a native AppKit/WebKit window, Python runtime, device backend and worldwide
 map interface. It targets **Apple Silicon Macs on macOS 15 or later** and uses
 **USB only** to connect to an iPhone.
 
-[Download for Mac](https://github.com/larsenbeenk2-ship-it/estera/releases/download/v0.1.1/Estera-0.1.1-macos-arm64.zip)
-· [Release notes](https://github.com/larsenbeenk2-ship-it/estera/releases/tag/v0.1.1)
+[Download for Mac](https://github.com/larsenbeenk2-ship-it/estera/releases/download/v0.1.2/Estera-0.1.2-macos-arm64.zip)
+· [Release notes](https://github.com/larsenbeenk2-ship-it/estera/releases/tag/v0.1.2)
 · [Install and use](docs/DESKTOP.md)
 · [GitHub](https://github.com/larsenbeenk2-ship-it/estera)
 · [Website](https://estera-virid.vercel.app)

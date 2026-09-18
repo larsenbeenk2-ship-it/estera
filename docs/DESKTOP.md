@@ -1,4 +1,4 @@
-# Estera for Mac — 0.1.1 preview
+# Estera for Mac — 0.1.2 preview
 
 Estera is a free, GPL-3.0-or-later desktop iPhone location simulator. The Mac
 download includes its native window, Python runtime, backend and web interface.
@@ -6,13 +6,15 @@ Node.js, Python, Homebrew and a terminal are not needed to use this download.
 
 ## Install and open
 
-1. Download `Estera-0.1.1-macos-arm64.zip` from the GitHub release.
+1. Download `Estera-0.1.2-macos-arm64.zip` from the GitHub release.
 2. Unzip it and drag **Estera.app** to **Applications**.
 3. Open Estera. If macOS blocks this preview because it is not notarized, review
    the release and use **System Settings → Privacy & Security → Open Anyway**.
    Do not disable Gatekeeper globally.
-4. Connect your iPhone with a USB data cable, unlock it, and complete the app's
-   Trust and Developer Mode setup. Keep the cable connected throughout the session.
+4. Connect your iPhone with a USB data cable and unlock it. If Developer Mode is
+   already enabled, choose **Developer Mode is already on — connect**, select
+   your phone, authorize the connection, and connect. Otherwise choose
+   **Set up my iPhone** for Trust and Developer Mode guidance. Keep the cable connected throughout the session.
 
 This preview targets **Apple Silicon Macs running macOS 15 or later** and iPhone
 USB developer services on **iOS 17.4 or later**. Those version targets do not

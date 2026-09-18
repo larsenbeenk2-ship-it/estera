@@ -1,4 +1,4 @@
-# Estera 0.1.1 preview status
+# Estera 0.1.2 preview status
 
 September 17, 2026.
 
@@ -14,13 +14,23 @@ are **USB only**. There is no paid Pro tier or GitHub-star requirement.
 | USB policy | Wireless discovery/connection/setup rejected; old Auto preferences use USB without fallback |
 | Device authorization | Loopback host/origin/token checks and explicit selected-phone consent retained |
 | Frontend | Worldwide map, search, Pin/Walk/Bike/Drive, route preview, GPX, saved journeys and session controls |
-| Download target | `Estera-0.1.1-macos-arm64.zip` on GitHub tag `v0.1.1` |
+| Download target | `Estera-0.1.2-macos-arm64.zip` on GitHub tag `v0.1.2` |
 | Signing | Ad-hoc preview; no Developer ID signing or notarization |
 | Windows | USB source preview; no installer or native Windows/iPhone evidence |
 | Real hardware | Location set/reset and physical-location recovery remain unverified |
 | Fresh installation | Clean-machine installation remains unverified |
 
-## Checks completed for this revision
+## 0.1.2 setup shortcut
+
+The initial phone setup screen now offers **Developer Mode is already on — connect**.
+This skips the enable/restart walkthrough while retaining selected-phone consent,
+USB authentication, and developer-file preparation when needed. The shortcut is
+also available after phone selection and on Developer Mode screens.
+
+The 0.1.2 TypeScript and production frontend build passed. The native UI and
+physical phone connection were not re-tested for this interface change.
+
+## Prior implementation checks
 
 - **4 focused desktop/backend tests passed**: per-launch identity remains distinct
   from API authorization; origin and device-consent rules hold; source bootstrap

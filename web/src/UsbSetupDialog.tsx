@@ -75,6 +75,7 @@ export function UsbSetupDialog({
   const [setupPath, setSetupPath] = useState<"guided" | "quick">(
     remembered ? "quick" : "guided",
   );
+  const [skipDeveloperInstructions, setSkipDeveloperInstructions] = useState(false);
   const [authorized, setAuthorized] = useState(false);
   const [devices, setDevices] = useState<Device[]>([]);
   const [selected, setSelected] = useState(remembered?.device_id ?? status.device_id ?? "");
@@ -108,6 +109,7 @@ export function UsbSetupDialog({
   const scanLabel = "Looking for an iPhone over USB";
   function startSetup() {
     setSetupPath("guided");
+    setSkipDeveloperInstructions(false);
     setAuthorized(false);
     setReadiness(null);
     setError("");
@@ -115,6 +117,10 @@ export function UsbSetupDialog({
     setNotice("");
     setHostNext("plug");
     setStep(windows ? "host" : "plug");
+  }
+  function connectWithExistingDeveloperMode() {
+    startSetup();
+    setSkipDeveloperInstructions(true);
   }
   function selectPhone(deviceId: string) {
     if (deviceId && remembered && deviceId !== remembered.device_id) {
@@ -257,7 +263,10 @@ export function UsbSetupDialog({
     }
   }
   async function usePhone(deviceId = selected) {
-    if (setupPath === "quick") {
+    if (setupPath === "quick" || skipDeveloperInstructions) {
+      // Skip the instructional wizard, not phone authorization or the backend's
+      // Developer Mode check. Guided preparation reuses/mounts developer files
+      // without revealing the setting, switching it on, or requesting a restart.
       await connect(deviceId);
       return;
     }
@@ -381,7 +390,7 @@ export function UsbSetupDialog({
         {step !== "intro" && (
           <div className="usb-step-meta">
             <span>
-              {setupPath === "quick" ? "Phone connection" : "Phone setup"}
+              {setupPath === "quick" || skipDeveloperInstructions ? "Phone connection" : "Phone setup"}
             </span>
             <span>
               {selected ? phoneName : "Phone setup"}
@@ -414,7 +423,12 @@ export function UsbSetupDialog({
                 After setup, choose your phone and connect. iOS updates or
                 resetting Trust may require attention again.
               </p>
-              {primary("Set up my iPhone", startSetup)}
+              {primary("Developer Mode is already on — connect", connectWithExistingDeveloperMode)}
+              <p className="fine-print">
+                Skip the enable and restart instructions. Choose your iPhone,
+                authorize the connection, and we’ll reuse its existing setup.
+              </p>
+              {secondary("Set up my iPhone", startSetup)}
             </>
           )}
           {step === "host" && (
@@ -483,8 +497,9 @@ export function UsbSetupDialog({
               </fieldset>
               {setupPath === "guided" && (
                 <p>
-                  We’ll check Trust and Developer Mode automatically, then show
-                  only the next step you need.
+                  {skipDeveloperInstructions
+                    ? "We’ll connect using the Developer Mode you’ve already enabled. No enable or restart walkthrough is needed."
+                    : "We’ll check Trust and Developer Mode automatically, then show only the next step you need."}
                 </p>
               )}
               {setupPath === "guided" ? (
@@ -515,10 +530,10 @@ export function UsbSetupDialog({
                 </p>
               )}
               {primary(
-                setupPath === "quick" ? "Connect this iPhone" : "Complete setup and connect",
+                setupPath === "quick" || skipDeveloperInstructions ? "Connect this iPhone" : "Complete setup and connect",
                 () =>
                   void work(
-                    setupPath === "quick" ? "Connecting your iPhone" : "Checking your iPhone",
+                    setupPath === "quick" || skipDeveloperInstructions ? "Connecting your iPhone" : "Checking your iPhone",
                     () => usePhone(),
                   ),
                 !selected || (setupPath === "guided" && !authorized),
@@ -571,6 +586,11 @@ export function UsbSetupDialog({
                 button below to skip the enable and restart instructions.
               </p>
               {primary(
+                "Developer Mode is already on — connect",
+                () => void work("Connecting your iPhone", connect),
+                !selected || !authorized,
+              )}
+              {secondary(
                 "Check Developer Mode again",
                 () => void work("Checking Developer Mode", () => check()),
               )}
@@ -759,8 +779,8 @@ export function UsbSetupDialog({
           )}
         </section>
         {setupPath === "guided" &&
-          (["developer", "enable", "restart", "confirm"].includes(step) ||
-          (step === "choose" && !!selected && !!error)) && (
+          (["enable", "restart", "confirm"].includes(step) ||
+          (step === "choose" && !!selected && !skipDeveloperInstructions)) && (
           <button
             className="secondary full"
             disabled={!!busy || !selected || !authorized}
